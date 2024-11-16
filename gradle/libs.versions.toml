@@ -1,6 +1,7 @@
 [versions]
 spring-boot = "3.5.16"
 spring-dependency-management = "1.1.7"
+spotless = "7.2.1"
 mapstruct = "1.6.3"
 lombok-mapstruct-binding = "0.2.0"
 
@@ -12,3 +13,4 @@ lombok-mapstruct-binding = { module = "org.projectlombok:lombok-mapstruct-bindin
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
 spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

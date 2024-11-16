@@ -1,7 +1,9 @@
 plugins {
     java
+    jacoco
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependency.management)
+    alias(libs.plugins.spotless)
 }
 
 group = "com.core"
@@ -64,4 +66,22 @@ tasks.compileJava {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+spotless {
+    java {
+        target("src/**/*.java")
+        palantirJavaFormat()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 }
