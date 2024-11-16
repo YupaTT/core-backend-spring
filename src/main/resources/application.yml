@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: core-backend-spring
+  profiles:
+    default: local
+  threads:
+    virtual:
+      enabled: true
+  main:
+    keep-alive: true
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:core}
+    username: ${DB_USERNAME:core}
+    password: ${DB_PASSWORD:core}
+    hikari:
+      pool-name: core-hikari
+      maximum-pool-size: ${DB_POOL_SIZE:20}
+      minimum-idle: 5
+      connection-timeout: 5000
+      idle-timeout: 300000
+      max-lifetime: 1800000
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 50
+          time_zone: UTC
+        order_inserts: true
+        order_updates: true
+        default_batch_fetch_size: 50
+        query:
+          fail_on_pagination_over_collection_fetch: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  data:
+    web:
+      pageable:
+        max-page-size: 100
+
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /api
+  compression:
+    enabled: true
+    min-response-size: 1024
+  shutdown: graceful
+  error:
+    include-message: never
+    include-stacktrace: never
