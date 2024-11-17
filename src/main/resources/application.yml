@@ -52,3 +52,9 @@ server:
   error:
     include-message: never
     include-stacktrace: never
+
+springdoc:
+  api-docs:
+    enabled: ${SWAGGER_ENABLED:false}
+  swagger-ui:
+    enabled: ${SWAGGER_ENABLED:false}
