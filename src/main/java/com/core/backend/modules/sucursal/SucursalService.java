@@ -36,6 +36,11 @@ public class SucursalService {
         return mapper.toResponse(buscar(id));
     }
 
+    /** Usado por el módulo de usuarios. */
+    public Sucursal referencia(UUID id) {
+        return id == null ? null : buscar(id);
+    }
+
     @Transactional
     public SucursalResponse crear(SucursalRequest request) {
         if (repository.existsByNombreIgnoreCase(request.nombre())

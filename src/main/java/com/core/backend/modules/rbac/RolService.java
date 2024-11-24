@@ -92,6 +92,15 @@ public class RolService {
         rolRepository.delete(rol);
     }
 
+    /** Usado por el módulo de usuarios para validar los roles a asignar. */
+    public Set<Rol> resolverRoles(Collection<UUID> ids) {
+        List<Rol> roles = rolRepository.findAllByIdIn(ids);
+        if (roles.size() != new HashSet<>(ids).size()) {
+            throw ApiException.badRequest("Uno o más roles no existen");
+        }
+        return new HashSet<>(roles);
+    }
+
     private Set<Permiso> resolverPermisos(Collection<UUID> ids) {
         List<Permiso> permisos = permisoRepository.findAllByIdIn(ids);
         if (permisos.size() != new HashSet<>(ids).size()) {
