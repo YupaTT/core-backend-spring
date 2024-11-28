@@ -71,6 +71,9 @@ public class SucursalService {
     @Transactional
     public void eliminar(UUID id) {
         Sucursal sucursal = buscar(id);
+        if (repository.tieneUsuarios(id)) {
+            throw ApiException.conflict("La sucursal tiene usuarios asignados; desactívela en su lugar");
+        }
         repository.delete(sucursal);
     }
 

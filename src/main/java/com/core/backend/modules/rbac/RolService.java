@@ -89,6 +89,9 @@ public class RolService {
         if (rol.isSistema()) {
             throw ApiException.conflict("Los roles de sistema no se pueden eliminar");
         }
+        if (rolRepository.isAsignado(id)) {
+            throw ApiException.conflict("El rol está asignado a uno o más usuarios");
+        }
         rolRepository.delete(rol);
     }
 
