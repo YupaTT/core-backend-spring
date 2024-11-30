@@ -2,6 +2,7 @@ package com.core.backend.modules.usuario;
 
 import com.core.backend.common.api.PageResponse;
 import com.core.backend.common.exception.ApiException;
+import com.core.backend.modules.auth.token.RefreshTokenService;
 import com.core.backend.modules.rbac.RolService;
 import com.core.backend.modules.sucursal.SucursalService;
 import com.core.backend.modules.usuario.dto.UsuarioDtos.UsuarioCreateRequest;
@@ -25,6 +26,7 @@ public class UsuarioService {
     private final UsuarioMapper mapper;
     private final RolService rolService;
     private final SucursalService sucursalService;
+    private final RefreshTokenService refreshTokenService;
     private final PasswordEncoder passwordEncoder;
 
     public PageResponse<UsuarioResponse> listar(String q, Boolean activo, UUID sucursalId, Pageable pageable) {
@@ -82,11 +84,13 @@ public class UsuarioService {
         return mapper.toResponse(usuario);
     }
 
+    /** Los cambios de roles aplican al siguiente login/refresh; se revocan sus sesiones para forzarlo. */
     @Transactional
     public UsuarioResponse asignarRoles(UUID id, Set<UUID> rolIds) {
         Usuario usuario = buscar(id);
         usuario.getRoles().clear();
         usuario.getRoles().addAll(rolService.resolverRoles(rolIds));
+        refreshTokenService.revokeAll(id);
         return mapper.toResponse(usuario);
     }
 
@@ -97,6 +101,9 @@ public class UsuarioService {
         }
         Usuario usuario = buscar(id);
         usuario.setActivo(activo);
+        if (!activo) {
+            refreshTokenService.revokeAll(id);
+        }
         return mapper.toResponse(usuario);
     }
 
@@ -107,6 +114,7 @@ public class UsuarioService {
             throw ApiException.badRequest("La contraseña actual no es correcta");
         }
         usuario.setPassword(passwordEncoder.encode(nueva));
+        refreshTokenService.revokeAll(id);
     }
 
     @Transactional
