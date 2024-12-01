@@ -1,0 +1,10 @@
+app:
+  security:
+    jwt:
+      secret: test-secret-0123456789-abcdefghijklmnopqrstuvwxyz
+    login-password-base64: false
+    bootstrap-admin:
+      enabled: true
+      username: admin
+      email: admin@test.local
+      password: Admin123*
