@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .headers(h -> h.frameOptions(f -> f.deny()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.OPTIONS, "/**")
                         .permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/refresh")
+                        .requestMatchers(HttpMethod.POST, "/auth", "/auth/login", "/auth/refresh")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET, "/auth/verify")
                         .permitAll()

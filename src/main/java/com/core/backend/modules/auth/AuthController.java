@@ -1,6 +1,8 @@
 package com.core.backend.modules.auth;
 
 import com.core.backend.common.api.ApiResponse;
+import com.core.backend.modules.auth.dto.AuthDtos.FrontDatos;
+import com.core.backend.modules.auth.dto.AuthDtos.FrontLoginResponse;
 import com.core.backend.modules.auth.dto.AuthDtos.LoginRequest;
 import com.core.backend.modules.auth.dto.AuthDtos.LoginResponse;
 import com.core.backend.modules.auth.dto.AuthDtos.LogoutRequest;
@@ -36,6 +38,17 @@ public class AuthController {
     @PostMapping("/login")
     public ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequest request, HttpServletRequest http) {
         return ApiResponse.ok("Login correcto", authService.login(request, http.getRemoteAddr()));
+    }
+
+    @Operation(summary = "Login compatible con el frontend (docs/requerimientofront.md)")
+    @PostMapping
+    public FrontLoginResponse loginFront(@Valid @RequestBody LoginRequest request, HttpServletRequest http) {
+        LoginResponse login = authService.login(request, http.getRemoteAddr());
+        TokenResponse tokens = login.tokens();
+        return new FrontLoginResponse(
+                "success",
+                "Login correcto",
+                new FrontDatos(login.perfil(), tokens.accessToken(), tokens.refreshToken(), tokens.exp()));
     }
 
     @Operation(summary = "Renueva el access token rotando el refresh token")
