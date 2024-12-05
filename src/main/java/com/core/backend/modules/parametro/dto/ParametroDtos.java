@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -32,8 +33,9 @@ public final class ParametroDtos {
             int orden,
             boolean activo,
             Long version,
-            Instant updatedAt) {}
+            Instant updatedAt)
+            implements Serializable {}
 
-    /** Versión liviana para combos/selects del frontend. */
-    public record ParametroItem(String codigo, String nombre, String valor) {}
+    /** Versión liviana para combos/selects del frontend; es la que se cachea. */
+    public record ParametroItem(String codigo, String nombre, String valor) implements Serializable {}
 }

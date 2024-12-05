@@ -2,12 +2,16 @@ package com.core.backend.modules.parametro;
 
 import com.core.backend.common.api.PageResponse;
 import com.core.backend.common.exception.ApiException;
+import com.core.backend.integration.cache.CacheNames;
 import com.core.backend.modules.parametro.dto.ParametroDtos.ParametroItem;
 import com.core.backend.modules.parametro.dto.ParametroDtos.ParametroRequest;
 import com.core.backend.modules.parametro.dto.ParametroDtos.ParametroResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -41,10 +45,12 @@ public class ParametroService {
         return mapper.toResponse(buscar(id));
     }
 
+    @Cacheable(cacheNames = CacheNames.PARAMETROS, key = "#grupo.toUpperCase()")
     public List<ParametroItem> porGrupo(String grupo) {
-        return repository.findAllByGrupoAndActivoTrueOrderByOrdenAscNombreAsc(grupo.toUpperCase()).stream()
-                .map(mapper::toItem)
-                .toList();
+        return new ArrayList<>(
+                repository.findAllByGrupoAndActivoTrueOrderByOrdenAscNombreAsc(grupo.toUpperCase()).stream()
+                        .map(mapper::toItem)
+                        .toList());
     }
 
     public List<String> grupos() {
@@ -52,6 +58,7 @@ public class ParametroService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = CacheNames.PARAMETROS, key = "#request.grupo()")
     public ParametroResponse crear(ParametroRequest request) {
         if (repository.existsByGrupoAndCodigo(request.grupo(), request.codigo())) {
             throw ApiException.conflict(
@@ -63,6 +70,7 @@ public class ParametroService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = CacheNames.PARAMETROS, allEntries = true)
     public ParametroResponse actualizar(UUID id, ParametroRequest request) {
         Parametro parametro = buscar(id);
         if (repository.existsByGrupoAndCodigoAndIdNot(request.grupo(), request.codigo(), id)) {
@@ -74,6 +82,7 @@ public class ParametroService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = CacheNames.PARAMETROS, allEntries = true)
     public ParametroResponse cambiarEstado(UUID id, boolean activo) {
         Parametro parametro = buscar(id);
         parametro.setActivo(activo);
@@ -81,6 +90,7 @@ public class ParametroService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = CacheNames.PARAMETROS, allEntries = true)
     public void eliminar(UUID id) {
         repository.delete(buscar(id));
     }
