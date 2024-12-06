@@ -4,11 +4,17 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/** Implementaciones en memoria para una sola instancia. */
+/** Implementaciones en memoria para una sola instancia; con Redis activo se usan las de integration.redis. */
 @Configuration
+@ConditionalOnProperty(
+        prefix = "app.integrations.redis",
+        name = "enabled",
+        havingValue = "false",
+        matchIfMissing = true)
 public class InMemorySecurityStores {
 
     @Bean
