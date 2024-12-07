@@ -14,6 +14,7 @@ import com.core.backend.security.JwtService;
 import com.core.backend.security.LoginAttemptService;
 import com.core.backend.security.SecurityProperties;
 import com.core.backend.security.TokenRevocationStore;
+import io.micrometer.observation.annotation.Observed;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
@@ -30,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Observed(name = "auth")
 public class AuthService {
 
     private static final String CREDENCIALES_INVALIDAS = "Usuario o contraseña incorrectos";
