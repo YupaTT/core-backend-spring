@@ -84,6 +84,12 @@ app:
         parametros: 30m
     observability:
       tracing-enabled: ${TRACING_ENABLED:false}
+    messaging:
+      provider: ${MESSAGING_PROVIDER:none}
+      topic-prefix: core
+      outbox:
+        batch-size: 100
+        poll-interval: 2s
 
 management:
   endpoints:
