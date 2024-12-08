@@ -53,6 +53,12 @@ spring:
       acks: all
       properties:
         enable.idempotence: true
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    publisher-confirm-type: simple
 
 server:
   port: ${SERVER_PORT:8080}
@@ -110,6 +116,8 @@ management:
   health:
     redis:
       enabled: ${app.integrations.redis.enabled}
+    rabbit:
+      enabled: ${RABBIT_HEALTH_ENABLED:false}
   tracing:
     enabled: ${app.integrations.observability.tracing-enabled}
     sampling:

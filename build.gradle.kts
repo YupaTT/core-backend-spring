@@ -48,6 +48,7 @@ dependencies {
     implementation("io.micrometer:micrometer-tracing-bridge-otel")
     implementation("io.opentelemetry:opentelemetry-exporter-otlp")
     implementation("org.springframework.kafka:spring-kafka")
+    implementation("org.springframework.boot:spring-boot-starter-amqp")
 
     // Lombok + MapStruct
     compileOnly("org.projectlombok:lombok")
