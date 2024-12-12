@@ -38,4 +38,6 @@ public final class ParametroDtos {
 
     /** Versión liviana para combos/selects del frontend; es la que se cachea. */
     public record ParametroItem(String codigo, String nombre, String valor) implements Serializable {}
+
+    public record ParametroEvent(UUID id, String grupo, String codigo, String accion) {}
 }

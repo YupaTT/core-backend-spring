@@ -3,6 +3,8 @@ package com.core.backend.modules.parametro;
 import com.core.backend.common.api.PageResponse;
 import com.core.backend.common.exception.ApiException;
 import com.core.backend.integration.cache.CacheNames;
+import com.core.backend.integration.messaging.EventPublisher;
+import com.core.backend.modules.parametro.dto.ParametroDtos.ParametroEvent;
 import com.core.backend.modules.parametro.dto.ParametroDtos.ParametroItem;
 import com.core.backend.modules.parametro.dto.ParametroDtos.ParametroRequest;
 import com.core.backend.modules.parametro.dto.ParametroDtos.ParametroResponse;
@@ -22,8 +24,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ParametroService {
 
+    private static final String AGGREGATE = "parametro";
+
     private final ParametroRepository repository;
     private final ParametroMapper mapper;
+    private final EventPublisher eventPublisher;
 
     public PageResponse<ParametroResponse> listar(String grupo, String q, Boolean activo, Pageable pageable) {
         Specification<Parametro> spec = (root, query, cb) -> cb.conjunction();
@@ -66,7 +71,9 @@ public class ParametroService {
         }
         Parametro parametro = new Parametro();
         mapper.update(parametro, request);
-        return mapper.toResponse(repository.save(parametro));
+        Parametro guardado = repository.save(parametro);
+        publicar(guardado, "CREADO");
+        return mapper.toResponse(guardado);
     }
 
     @Transactional
@@ -78,6 +85,7 @@ public class ParametroService {
                     "Ya existe el código %s en el grupo %s".formatted(request.codigo(), request.grupo()));
         }
         mapper.update(parametro, request);
+        publicar(parametro, "ACTUALIZADO");
         return mapper.toResponse(parametro);
     }
 
@@ -86,13 +94,24 @@ public class ParametroService {
     public ParametroResponse cambiarEstado(UUID id, boolean activo) {
         Parametro parametro = buscar(id);
         parametro.setActivo(activo);
+        publicar(parametro, activo ? "ACTIVADO" : "DESACTIVADO");
         return mapper.toResponse(parametro);
     }
 
     @Transactional
     @CacheEvict(cacheNames = CacheNames.PARAMETROS, allEntries = true)
     public void eliminar(UUID id) {
-        repository.delete(buscar(id));
+        Parametro parametro = buscar(id);
+        repository.delete(parametro);
+        publicar(parametro, "ELIMINADO");
+    }
+
+    private void publicar(Parametro p, String accion) {
+        eventPublisher.publish(
+                AGGREGATE,
+                p.getId().toString(),
+                "parametro." + accion.toLowerCase(),
+                new ParametroEvent(p.getId(), p.getGrupo(), p.getCodigo(), accion));
     }
 
     private Parametro buscar(UUID id) {
