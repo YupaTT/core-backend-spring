@@ -6,6 +6,7 @@ springdoc = "2.8.17"
 java-jwt = "4.6.2"
 mapstruct = "1.6.3"
 lombok-mapstruct-binding = "0.2.0"
+resilience4j = "2.4.0"
 archunit = "1.5.1"
 
 [libraries]
@@ -14,6 +15,7 @@ java-jwt = { module = "com.auth0:java-jwt", version.ref = "java-jwt" }
 mapstruct = { module = "org.mapstruct:mapstruct", version.ref = "mapstruct" }
 mapstruct-processor = { module = "org.mapstruct:mapstruct-processor", version.ref = "mapstruct" }
 lombok-mapstruct-binding = { module = "org.projectlombok:lombok-mapstruct-binding", version.ref = "lombok-mapstruct-binding" }
+resilience4j-spring-boot3 = { module = "io.github.resilience4j:resilience4j-spring-boot3", version.ref = "resilience4j" }
 archunit-junit5 = { module = "com.tngtech.archunit:archunit-junit5", version.ref = "archunit" }
 
 [plugins]

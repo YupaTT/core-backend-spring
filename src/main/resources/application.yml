@@ -102,6 +102,8 @@ app:
       outbox:
         batch-size: 100
         poll-interval: 2s
+    http:
+      clients: {}
 
 management:
   endpoints:
@@ -134,3 +136,22 @@ springdoc:
     enabled: ${SWAGGER_ENABLED:false}
   swagger-ui:
     enabled: ${SWAGGER_ENABLED:false}
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-size: 20
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30s
+        permitted-number-of-calls-in-half-open-state: 5
+  retry:
+    configs:
+      default:
+        max-attempts: 3
+        wait-duration: 500ms
+        enable-exponential-backoff: true
+  timelimiter:
+    configs:
+      default:
+        timeout-duration: 5s

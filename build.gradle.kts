@@ -49,6 +49,7 @@ dependencies {
     implementation("io.opentelemetry:opentelemetry-exporter-otlp")
     implementation("org.springframework.kafka:spring-kafka")
     implementation("org.springframework.boot:spring-boot-starter-amqp")
+    implementation(libs.resilience4j.spring.boot3)
 
     // Lombok + MapStruct
     compileOnly("org.projectlombok:lombok")
