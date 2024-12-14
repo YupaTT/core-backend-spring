@@ -13,6 +13,8 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.checksums.RequestChecksumCalculation;
+import software.amazon.awssdk.core.checksums.ResponseChecksumValidation;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -39,10 +41,13 @@ public class S3StorageService implements StorageService, AutoCloseable {
                         : StaticCredentialsProvider.create(AwsBasicCredentials.create(s3.accessKey(), s3.secretKey()));
         S3Configuration serviceConfig =
                 S3Configuration.builder().pathStyleAccessEnabled(s3.pathStyle()).build();
+        // WHEN_REQUIRED: compatibilidad con proveedores S3 que no soportan checksums con trailer (MinIO, R2, etc.)
         var clientBuilder = S3Client.builder()
                 .region(region)
                 .credentialsProvider(credentials)
-                .serviceConfiguration(serviceConfig);
+                .serviceConfiguration(serviceConfig)
+                .requestChecksumCalculation(RequestChecksumCalculation.WHEN_REQUIRED)
+                .responseChecksumValidation(ResponseChecksumValidation.WHEN_REQUIRED);
         var presignerBuilder = S3Presigner.builder()
                 .region(region)
                 .credentialsProvider(credentials)
