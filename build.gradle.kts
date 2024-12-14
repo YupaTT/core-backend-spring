@@ -25,6 +25,12 @@ repositories {
     mavenCentral()
 }
 
+dependencyManagement {
+    imports {
+        mavenBom(libs.awssdk.bom.get().toString())
+    }
+}
+
 dependencies {
     // Core
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -50,6 +56,7 @@ dependencies {
     implementation("org.springframework.kafka:spring-kafka")
     implementation("org.springframework.boot:spring-boot-starter-amqp")
     implementation(libs.resilience4j.spring.boot3)
+    implementation(libs.awssdk.s3)
 
     // Lombok + MapStruct
     compileOnly("org.projectlombok:lombok")
