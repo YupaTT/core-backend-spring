@@ -1,0 +1,21 @@
+# Lista blanca: solo entra al contexto lo necesario para compilar la imagen
+*
+
+!gradlew
+!gradle/
+!settings.gradle.kts
+!build.gradle.kts
+!src/main/
+
+# Nunca enviar secretos ni artefactos locales aunque cambie la lista blanca
+**/.env
+**/.env.*
+**/*.jks
+**/*.p12
+**/*.pem
+**/*.key
+**/build/
+**/.gradle/
+**/.idea/
+**/*.iml
+**/storage-data/
