@@ -64,12 +64,17 @@ public class S3StorageService implements StorageService, AutoCloseable {
     public StoredFile store(String folder, MultipartFile file) {
         StorageSupport.validate(file, properties);
         String key = StorageSupport.newKey(folder, file);
-        RequestBody body;
-        try {
-            body = RequestBody.fromInputStream(file.getInputStream(), file.getSize());
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        // Proveedor que reabre el stream: permite que el SDK reintente sin bufferizar el archivo en memoria
+        RequestBody body = RequestBody.fromContentProvider(
+                () -> {
+                    try {
+                        return file.getInputStream();
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                },
+                file.getSize(),
+                file.getContentType());
         client.putObject(b -> b.bucket(properties.s3().bucket()).key(key).contentType(file.getContentType()), body);
         return new StoredFile(key, file.getOriginalFilename(), file.getContentType(), file.getSize());
     }
