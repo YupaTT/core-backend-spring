@@ -109,3 +109,9 @@ spotless {
         endWithNewline()
     }
 }
+
+tasks.register<Exec>("installGitHooks") {
+    description = "Configura git para usar los hooks versionados en .githooks"
+    group = "help"
+    commandLine("git", "config", "core.hooksPath", ".githooks")
+}

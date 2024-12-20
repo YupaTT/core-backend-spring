@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Valida el formato Conventional Commits. Activar con: git config core.hooksPath .githooks
+set -euo pipefail
+
+subject=$(grep -v '^#' "$1" | head -n 1)
+
+# Commits generados por git se aceptan tal cual
+if [[ "$subject" =~ ^(Merge|Revert\ \"|fixup!|squash!) ]]; then
+    exit 0
+fi
+
+pattern='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9-]+\))?!?: [^ ].{0,71}$'
+if [[ ! "$subject" =~ $pattern ]]; then
+    cat >&2 <<MSG
+✖ Mensaje de commit inválido:
+    $subject
+
+Formato:  <tipo>(<alcance opcional>): <descripción en minúscula, máx. 72 caracteres>
+Tipos:    feat fix docs style refactor perf test build ci chore revert
+Ejemplo:  feat(auth): agregar refresh tokens rotativos
+Ver CONTRIBUTING.md
+MSG
+    exit 1
+fi
